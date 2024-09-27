@@ -47,4 +47,4 @@ def retrieve_traits_id(traits_container):
     
 
 list_ids=retrieve_traits_id(results_extraction)
-print(len(list_ids))
+print(list_ids)
