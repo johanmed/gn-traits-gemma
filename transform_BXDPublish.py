@@ -17,6 +17,7 @@ def process_data(data):
     Return new dataframe called new_data
     """
     new_data=pd.DataFrame()
+    new_data['id']=data.iloc[:, 0]
     for i in list_ids:
         j=i.strip()
         j=j.strip(', ')
@@ -26,4 +27,4 @@ def process_data(data):
     return new_data
 
 new_to_save=process_data(new_bxd_publish)
-new_to_save.to_csv('TrimmedBXDPublish.csv') # save results in file
+new_to_save.to_csv('TrimmedBXDPublish.csv', index=False) # save results in file
