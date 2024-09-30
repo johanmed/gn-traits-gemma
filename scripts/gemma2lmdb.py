@@ -33,7 +33,7 @@ meta = { "type": "gemma-assoc",
 log = {} # track output log
 hits = [] # track hits
 
-with lmdb.open(args.db,subdir=False) as env:
+with lmdb.open(args.db,subdir=False, map_size=int(1e10)) as env:
     for fn in args.files:
         print(f"Processing {fn}...")
         if "log" in fn:
@@ -44,44 +44,40 @@ with lmdb.open(args.db,subdir=False) as env:
                 with env.begin(write=True) as txn:
                     for line in f.readlines():
                         cont=line.rstrip('\n').split('\t')
-                        chr,rs,pos,miss,a1,a0,af,beta,se,l_mle,p_lrt, desc = line.rstrip('\n').split('\t')
+                        chr,rs,pos,miss,a1,a0,af,beta,se,l_mle,p_lrt,desc = line.rstrip('\n').split('\t')
                         if chr=='chr':
                             continue
                         if (chr =='X'):
                             chr = X
                         elif (chr =='Y'):
                             chr = Y
+                        elif (chr=='-9'):
+                            continue
                         else:
-                            chr = abs(int(chr))
-                        # print(f"chr={chr}, type={type(chr)}")
-                        chr_c = pack('c',bytes([chr]))
-                        # print(chr,chr_c,rs)
-                        # key = (chr+'_'+pos).encode()
-                        key = pack('>cL',chr_c,abs(int(pos)))
-                        test_chr_c,test_pos = unpack('>cL',key)
-                        assert chr_c == test_chr_c
-                        assert test_pos == abs(int(pos))
-                        test_chr = unpack('c',chr_c)
-                        # assert test_chr == int(chr), f"{test_chr} vs {int(chr)} - {chr}"
-                        val = pack('=ffffff', float(af), float(beta), float(se), float(l_mle), float(p_lrt), float(desc))
+                            chr = int(chr)
+                        chr_c = pack('c', bytes([chr]))
+                        key = pack('>cLfff', chr_c, int(pos), float(se), float(l_mle), float(p_lrt))
+                        test_chr_c, test_pos, se, l_mle, p_lrt = unpack('>cLfff', key)
+                        test_chr = unpack('c', test_chr_c)
+                        val = pack('=ffffff', float(af), float(beta), float(se), float(l_mle), float(p_lrt), float(desc)) 
                         res = txn.put(key, bytes(val), dupdata=False, overwrite=False)
                         if res == 0:
                             if float(p_lrt) > 2.0:
-                                hits.append([chr,int(pos),rs,p_lrt])
+                                hits.append([chr, int(pos), rs, p_lrt])
                         else:
                              print(f"WARNING: failed to update lmdb record with key {key} -- probably a duplicate {chr}:{pos} ({test_chr_c}:{test_pos})")
     with env.begin() as txn:
         with txn.cursor() as curs:
             # quick check and output of keys
-            for (key, value) in list(txn.cursor().iternext()):
+            for (key, value) in list(curs.iternext()):
                 if key==b'meta':
                     continue
                 else:
-                    chr,pos = unpack('>cL',key)
-                    chr_c=int.from_bytes(chr)
-                    print(chr_c,pos)
+                    test_chr_c, test_pos, se, l_mle, p_lrt = unpack('>cLfff', key)
+                    chr=unpack('c', test_chr_c)
                     af, beta, se, l_mle, p_lrt, desc= unpack('=ffffff', value)
-                    print(af, beta, se, l_mle, p_lrt, desc)
+                    if desc != 1.0:
+                        #print(desc)
 
     meta["hits"] = hits
     meta["log"] = log
