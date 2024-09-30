@@ -2,7 +2,7 @@
 
 import re
 
-list_keywords=['immune', 'Immune', 'metabolism', 'Metabolism', 'obesity', 'Obesity', 'Metagenome, microbiota, gastrointestinal system'] # list of keywords related to project
+list_keywords=['immune', 'Immune', 'metabolism', 'Metabolism', 'obesity', 'Obesity', 'Microbiome'] # list of keywords related to project
 
 def extract_traits(phenotype_filename, list_keywords):
     """
@@ -46,10 +46,15 @@ def save_info(filename, info):
     fh=open(filename, 'w')
     for element in info:
         val=info[element]
-        fh.write(f'{element} -> {val}\n')
+        if val[0][0]=='immune' or val[0][0]=='Immune':
+            fh.write(f'{(val[0][-1]).strip()}\tImmune system trait\t{element.strip()}\n')
+        elif val[0][0]=='metabolism' or val[0][0]=='Metabolism' or val[0][0]=='obesity' or val[0][0]=='Obesity':
+            fh.write(f'{(val[0][-1]).strip()}\tDiabetes trait\t{element.strip()}\n')
+        elif val[0][0]=='Microbiome':
+            fh.write(f'{(val[0][-1]).strip()}\tGut microbiome trait\t{element.strip()}\n')
     fh.close()
     
-#save_info('BXD_traits_selected_info.txt', results_extraction)
+save_info('BXD_traits_selected_info.csv', results_extraction)
 
 def retrieve_traits_id(traits_container):
     """
