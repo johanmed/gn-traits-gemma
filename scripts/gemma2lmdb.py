@@ -17,7 +17,7 @@ import lmdb
 from struct import *
 
 parser = argparse.ArgumentParser(description='Turn GEMMA assoc output into an lmdb db.')
-parser.add_argument('--db',default="project.mdb",help="DB name")
+parser.add_argument('--db', default="../data/project.mdb",help="DB name")
 parser.add_argument('--meta',required=False,help="JSON meta file name")
 parser.add_argument('files',nargs='*',help="GEMMA file(s)")
 args = parser.parse_args()
@@ -44,7 +44,7 @@ with lmdb.open(args.db,subdir=False, map_size=int(1e10)) as env:
                 with env.begin(write=True) as txn:
                     for line in f.readlines():
                         cont=line.rstrip('\n').split('\t')
-                        chr,rs,pos,miss,a1,a0,af,beta,se,l_mle,p_lrt,desc = line.rstrip('\n').split('\t')
+                        chr,rs,pos,miss,a1,a0,af,beta,se,l_mle,p_lrt,desc, full_desc = line.rstrip('\n').split('\t')
                         if chr=='chr':
                             continue
                         if (chr =='X'):

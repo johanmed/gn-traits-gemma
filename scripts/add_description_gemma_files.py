@@ -10,11 +10,11 @@ gemma_files=sorted(gemma_files)
 info_read=open('BXD_traits_selected_info.csv').readlines()
 info_read=sorted(info_read)
 
-def add_desc_gemma_assoc(file, val):
+def add_desc_gemma_assoc(file, val1, val2):
         gemma_content=open(file).readlines()
         to_write=[]
         for u in gemma_content:
-            to_write.append(f'{u.strip()}\t{val}')
+            to_write.append(f'{u.strip()}\t{val1}\t{val2}')
             
         ready_to_write='\n'.join(to_write)
         gemma_write=open(f'new_{file}', 'w')
@@ -28,12 +28,12 @@ def process_file(info_read, gemma_files, add_desc_gemma_assoc):
             l, m, n= r.split('.')
             if i==int(l[5:]) and y=='Diabetes trait':
                 print(f'Inferred diabetes trait for {f}')
-                add_desc_gemma_assoc(f, 0)
+                add_desc_gemma_assoc(f, 0, z)
             elif i==int(l[5:]) and y=='Immune system trait':
                 print(f'Inferred Immune system trait for {f}')
-                add_desc_gemma_assoc(f, 1)
+                add_desc_gemma_assoc(f, 1, z)
             elif i==int(l[5:]) and y=='Gut microbiome trait':
                 print(f'Inferred Gut microbiome trait for {f}')
-                add_desc_gemma_assoc(f, 2)
+                add_desc_gemma_assoc(f, 2, z)
 
 process_file(info_read, gemma_files, add_desc_gemma_assoc)
