@@ -35,7 +35,7 @@ def extract_traits(phenotype_filename, list_keywords):
     return container
     
 
-results_extraction=extract_traits('trait_list_BXDPublish.json', list_keywords)
+results_extraction=extract_traits('../data/trait_list_BXDPublish.json', list_keywords)
 
 def save_info(filename, info):
     """
@@ -54,7 +54,7 @@ def save_info(filename, info):
             fh.write(f'{(val[0][-1]).strip()}\tGut microbiome trait\t{element.strip()}\n')
     fh.close()
     
-save_info('BXD_traits_selected_info.csv', results_extraction)
+save_info('../data/BXD_traits_selected_info.csv', results_extraction)
 
 def retrieve_traits_id(traits_container):
     """

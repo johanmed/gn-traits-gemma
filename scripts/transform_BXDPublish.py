@@ -4,7 +4,7 @@ from extract_relevant_BXD_traits_id import list_ids # get list of traits ids
 
 import pandas as pd
 
-bxd_publish=pd.read_csv('BXDPublish.csv') # read in BXD phenotype file
+bxd_publish=pd.read_csv('../data/BXDPublish.csv') # read in BXD phenotype file
 new_bxd_publish=bxd_publish.copy() # make a copy and work on it
 
 
@@ -27,4 +27,4 @@ def process_data(data):
     return new_data
 
 new_to_save=process_data(new_bxd_publish)
-new_to_save.to_csv('TrimmedBXDPublish.csv', index=False) # save results in file
+new_to_save.to_csv('../data/TrimmedBXDPublish.csv', index=False) # save results in file
