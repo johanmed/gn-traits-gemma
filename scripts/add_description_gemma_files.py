@@ -3,12 +3,12 @@
 import pandas as pd
 import os
 
-os.chdir('../output')
+os.chdir('output/')
 
 gemma_files=[i for i in os.listdir() if ('assoc' in i) and ('relevant' in i) and ('new' not in i) and ('log' not in i)] # read files names from directory and store in array
 gemma_files=sorted(gemma_files) # sort by names
 
-info_read=open('../data/BXD_traits_selected_info.csv').readlines() # read contents of metadata file
+info_read=open('../../data/BXD_traits_selected_info.csv').readlines() # read contents of metadata file
 
 def add_desc_gemma_assoc(file, val1, val2):
         """
